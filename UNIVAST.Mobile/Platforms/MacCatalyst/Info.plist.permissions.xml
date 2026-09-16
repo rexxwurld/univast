@@ -1,0 +1,10 @@
+<!--
+  Same situation as the Android manifest: no real Platforms/iOS scaffolding exists in this
+  reconstruction. Merge these two keys into the generated Platforms/iOS/Info.plist (and
+  Platforms/MacCatalyst/Info.plist) — iOS/macCatalyst require a usage description string or
+  the app crashes as soon as location is requested.
+-->
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>UNIVAST uses your location to find the nearest point on campus and start walking directions from there.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>UNIVAST uses your location to find the nearest point on campus and start walking directions from there.</string>

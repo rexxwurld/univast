@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UNIVAST.Mobile.MainPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F5F5">
+    <Grid>
+        <Border BackgroundColor="#E8E8E8"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+            <Label Text="MAP" FontSize="28" TextColor="#999999"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+        </Border>
+
+        <VerticalStackLayout Padding="20,45,20,0" Spacing="12"
+                             VerticalOptions="Start">
+            <Label Text="UNIVAST" FontSize="24" FontAttributes="Bold"
+                   TextColor="#111111" />
+            <Border BackgroundColor="White" StrokeThickness="0"
+                    Padding="18,12" StrokeShape="RoundRectangle 18">
+                <Label Text="☷  Explore places around you"
+                       FontSize="16" TextColor="#333333" />
+            </Border>
+        </VerticalStackLayout>
+
+        <Border WidthRequest="52" HeightRequest="52"
+                Margin="20,0,0,30" BackgroundColor="White"
+                StrokeThickness="0" StrokeShape="RoundRectangle 26"
+                HorizontalOptions="Start" VerticalOptions="End">
+            <Label Text="◎" FontSize="30" TextColor="#1976D2"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+        </Border>
+
+        <Button x:Name="ExploreButton" Text="Explore"
+                FontSize="16" FontAttributes="Bold"
+                BackgroundColor="#111111" TextColor="White"
+                CornerRadius="25" HeightRequest="52"
+                Margin="20,0,20,30"
+                HorizontalOptions="End" VerticalOptions="End"
+                Clicked="Explore_Clicked" />
+
+        <Button x:Name="NavigateButton" Text="🧭  Navigate"
+                FontSize="16" FontAttributes="Bold"
+                BackgroundColor="#1976D2" TextColor="White"
+                CornerRadius="25" HeightRequest="52"
+                Margin="20,0,20,94"
+                HorizontalOptions="End" VerticalOptions="End"
+                Clicked="Navigate_Clicked" />
+
+        <Border x:Name="ExplorePanel" IsVisible="False"
+                BackgroundColor="White" StrokeThickness="0"
+                Padding="20" VerticalOptions="End" HeightRequest="330"
+                StrokeShape="RoundRectangle 28,28,0,0">
+            <VerticalStackLayout Spacing="18">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Explore" FontSize="24"
+                           FontAttributes="Bold" TextColor="#111111" />
+                    <Button Grid.Column="1" Text="✕" FontSize="18"
+                            BackgroundColor="Transparent"
+                            TextColor="#555555"
+                            Clicked="CloseExplore_Clicked" />
+                </Grid>
+
+                <Label Text="Discover places around you"
+                       FontSize="14" TextColor="#777777" />
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto"
+                      ColumnSpacing="12" RowSpacing="12">
+                    <Button Text="🎓  Education" BackgroundColor="#F2F2F2"
+                            TextColor="#111111" CornerRadius="16" />
+                    <Button Text="🏥  Health" Grid.Column="1"
+                            BackgroundColor="#F2F2F2" TextColor="#111111"
+                            CornerRadius="16" />
+                    <Button Text="🏘  Communities" Grid.Row="1"
+                            BackgroundColor="#F2F2F2" TextColor="#111111"
+                            CornerRadius="16" />
+                    <Button Text="📍  Places" Grid.Row="1" Grid.Column="1"
+                            BackgroundColor="#F2F2F2" TextColor="#111111"
+                            CornerRadius="16" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

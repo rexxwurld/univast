@@ -1,0 +1,10 @@
+<!--
+  This reconstructed project has no real Platforms/Android scaffolding (no MainActivity.cs,
+  MainApplication.cs, Resources, or a real AndroidManifest.xml — dotnet new maui normally
+  generates all of that). Once you scaffold a real MAUI project (see README.md), merge these
+  two permission lines into the <manifest> element of the generated
+  Platforms/Android/AndroidManifest.xml — they're required for the "My location" button
+  (Geolocation.GetLocationAsync) to work on Android.
+-->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
