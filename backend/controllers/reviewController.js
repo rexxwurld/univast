@@ -13,7 +13,7 @@ const { parsePagination, buildPaginatedResponse } = require("../utils/paginate")
  */
 async function recomputePlaceRating(placeId) {
   const [result] = await Review.aggregate([
-    { $match: { place: placeId, isHidden: false } },
+    { $match: { place: new mongoose.Types.ObjectId(placeId), isHidden: false } },
     { $group: { _id: "$place", avg: { $avg: "$rating" }, count: { $sum: 1 } } },
   ]);
 
