@@ -160,7 +160,7 @@ public partial class PlaceDetailPage : ContentPage
             return;
         }
 
-        var reason = await DisplayActionSheet(
+        var reason = await DisplayActionSheetAsync(
             "Why are you reporting this?",
             "Cancel",
             null,
