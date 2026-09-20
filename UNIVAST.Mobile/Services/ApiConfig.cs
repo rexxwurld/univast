@@ -35,7 +35,7 @@ public static class ApiConfig
     // ---- Production -----------------------------------------------------------------
     // TODO: replace with your deployed backend's HTTPS URL before building a Release
     // (store) build. Release builds refuse plain HTTP on Android.
-    public static string BaseUrl => "https://api.univast.example";
+    public static string BaseUrl => "https://univast-q4tg.onrender.com";
 #endif
 
     /// <summary>
