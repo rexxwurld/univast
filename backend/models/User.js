@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.index({ email: 1 }, { unique: true });
 
 /**
  * Set on a plain-text password; hashes it into passwordHash.
