@@ -4,6 +4,7 @@ using Mapsui.Styles;
 using Mapsui.Tiling;
 using Mapsui.UI;
 using Mapsui.UI.Maui;
+using MauiColor = Microsoft.Maui.Graphics.Color;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices.Sensors;
 using static Microsoft.Maui.ApplicationModel.Permissions;
@@ -79,8 +80,8 @@ public partial class MainPage : ContentPage
             CornerRadius = 16,
             Padding = new Thickness(14, 8),
             Margin = new Thickness(0, 0, 8, 8),
-            BackgroundColor = isSelected ? Color.FromArgb("#1976D2") : Color.FromArgb("#F2F2F2"),
-            TextColor = isSelected ? Colors.White : Color.FromArgb("#111111"),
+            BackgroundColor = isSelected ? MauiColor.FromArgb("#1976D2") : MauiColor.FromArgb("#F2F2F2"),
+            TextColor = isSelected ? Colors.White : MauiColor.FromArgb("#111111"),
         };
 
         chip.Clicked += (s, e) =>
