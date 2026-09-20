@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UNIVAST.Mobile.Pages.ClaimBusinessPage"
+             Title="Claim this place"
+             BackgroundColor="#F5F5F5">
+
+    <Grid>
+
+        <ActivityIndicator x:Name="LoadingIndicator"
+                            IsRunning="True"
+                            IsVisible="True"
+                            Color="#1976D2"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
+
+        <ScrollView x:Name="ContentScroll" IsVisible="False">
+            <VerticalStackLayout Padding="24" Spacing="16">
+
+                <Label Text="Claim this place as your business"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="#111111" />
+
+                <!-- Shown when the account already has one or more businesses. -->
+                <VerticalStackLayout x:Name="PickExistingSection" IsVisible="False" Spacing="12">
+                    <Label Text="Choose which of your businesses this is:" FontSize="14" TextColor="#555555" />
+                    <Picker x:Name="BusinessPicker" Title="Select a business" />
+                    <Button x:Name="ClaimWithSelectedButton"
+                            Text="Claim with selected business"
+                            BackgroundColor="#1976D2"
+                            TextColor="White"
+                            CornerRadius="24"
+                            HeightRequest="50"
+                            Clicked="ClaimWithSelected_Clicked" />
+                </VerticalStackLayout>
+
+                <!-- Shown when the account has no business yet — create one, then claim with it. -->
+                <VerticalStackLayout x:Name="CreateNewSection" IsVisible="False" Spacing="12">
+                    <Label Text="You don't have a business profile yet. Create one to claim this place:"
+                           FontSize="14" TextColor="#555555" />
+
+                    <Border BackgroundColor="White" StrokeThickness="0" Padding="14,4" StrokeShape="RoundRectangle 12">
+                        <Entry x:Name="BusinessNameEntry" Placeholder="Business name" />
+                    </Border>
+
+                    <Border BackgroundColor="White" StrokeThickness="0" Padding="14,4" StrokeShape="RoundRectangle 12">
+                        <Entry x:Name="BusinessDescriptionEntry" Placeholder="Short description (optional)" />
+                    </Border>
+
+                    <Button x:Name="CreateAndClaimButton"
+                            Text="Create business &amp; claim"
+                            BackgroundColor="#1976D2"
+                            TextColor="White"
+                            CornerRadius="24"
+                            HeightRequest="50"
+                            Clicked="CreateAndClaim_Clicked" />
+                </VerticalStackLayout>
+
+                <Label x:Name="ErrorLabel" IsVisible="False" TextColor="#B00020" FontSize="13" />
+                <ActivityIndicator x:Name="SubmitLoadingIndicator" IsRunning="False" IsVisible="False" Color="#1976D2" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

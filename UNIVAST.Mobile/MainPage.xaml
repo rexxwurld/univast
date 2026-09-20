@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            
+             x:Class="UNIVAST.Mobile.MainPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F5F5F5">
+
+    <Grid>
+
+        
+
+        <VerticalStackLayout Padding="20,45,20,0"
+                             Spacing="12"
+                             VerticalOptions="Start">
+
+            <Label Text="UNIVAST"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="#111111" />
+
+            <Border BackgroundColor="White"
+                    StrokeThickness="0"
+                    Padding="14,4"
+                    StrokeShape="RoundRectangle 18">
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Text="☷" FontSize="18" TextColor="#333333" VerticalOptions="Center" />
+                    <Entry x:Name="SearchEntry"
+                           Grid.Column="1"
+                           Placeholder="Search places around you"
+                           ReturnType="Search"
+                           Completed="SearchEntry_Completed" />
+                    <Button x:Name="SearchButton"
+                            Grid.Column="2"
+                            Text="Go"
+                            FontSize="14"
+                            BackgroundColor="Transparent"
+                            TextColor="#1976D2"
+                            Clicked="SearchButton_Clicked" />
+                </Grid>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <Border WidthRequest="52"
+                HeightRequest="52"
+                Margin="20,0,0,30"
+                BackgroundColor="White"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 26"
+                HorizontalOptions="Start"
+                VerticalOptions="End">
+
+            <Label Text="◎"
+                   FontSize="30"
+                   TextColor="#1976D2"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+
+        </Border>
+
+        <Button x:Name="ExploreButton"
+                Text="Explore"
+                FontSize="16"
+                FontAttributes="Bold"
+                BackgroundColor="#111111"
+                TextColor="White"
+                CornerRadius="25"
+                HeightRequest="52"
+                Margin="20,0,20,30"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Clicked="Explore_Clicked" />
+
+        <Button x:Name="NavigateButton"
+                Text="🧭  Navigate"
+                FontSize="16"
+                FontAttributes="Bold"
+                BackgroundColor="#1976D2"
+                TextColor="White"
+                CornerRadius="25"
+                HeightRequest="52"
+                Margin="20,0,20,94"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Clicked="Navigate_Clicked" />
+
+        <Border x:Name="ExplorePanel"
+                IsVisible="False"
+                BackgroundColor="White"
+                StrokeThickness="0"
+                Padding="20"
+                VerticalOptions="End"
+                HeightRequest="330"
+                StrokeShape="RoundRectangle 28,28,0,0">
+
+            <VerticalStackLayout Spacing="18">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <Label Text="Explore"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#111111" />
+
+                    <Button Grid.Column="1"
+                            Text="✕"
+                            FontSize="18"
+                            BackgroundColor="Transparent"
+                            TextColor="#555555"
+                            Clicked="CloseExplore_Clicked" />
+
+                </Grid>
+
+                <Label Text="Discover places around you"
+                       FontSize="14"
+                       TextColor="#777777" />
+
+                <Label x:Name="NoCategoriesLabel"
+                       Text="Couldn't load categories."
+                       FontSize="13"
+                       TextColor="#999999"
+                       IsVisible="False" />
+
+                <ScrollView HeightRequest="140">
+                    <FlexLayout x:Name="CategoryChipsPanel"
+                                Wrap="Wrap"
+                                Direction="Row"
+                                JustifyContent="Start"
+                                AlignItems="Start" />
+                </ScrollView>
+
+            </VerticalStackLayout>
+
+        </Border>
+
+        <ActivityIndicator x:Name="LocationLoadingIndicator"
+                            IsRunning="True"
+                            IsVisible="True"
+                            Color="#1976D2"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
+
+        <Border x:Name="OfflineBanner"
+                IsVisible="False"
+                BackgroundColor="#111111"
+                Opacity="0.85"
+                StrokeThickness="0"
+                Padding="16,10"
+                Margin="20,130,20,0"
+                StrokeShape="RoundRectangle 12"
+                VerticalOptions="Start"
+                HorizontalOptions="Fill">
+
+            <Label Text="📡  Showing saved places — you appear to be offline"
+                   FontSize="12"
+                   TextColor="White"
+                   HorizontalTextAlignment="Center" />
+
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+             x:Class="UNIVAST.Mobile.Pages.RoutePage"
+             Title="Navigate"
+             BackgroundColor="#F5F5F5">
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="0">
+
+        <!-- Controls panel -->
+        <VerticalStackLayout Grid.Row="0" Padding="16,12" Spacing="10" BackgroundColor="White">
+
+            <Label Text="Where to?" FontSize="20" FontAttributes="Bold" TextColor="#111111" />
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Picker x:Name="StartPicker"
+                        Grid.Column="0"
+                        Title="Start"
+                        ItemDisplayBinding="{Binding DisplayName}" />
+                <Button Grid.Column="1"
+                        Text="📍 My location"
+                        FontSize="12"
+                        BackgroundColor="#F2F2F2"
+                        TextColor="#111111"
+                        CornerRadius="14"
+                        Clicked="UseMyLocation_Clicked" />
+            </Grid>
+
+            <Picker x:Name="EndPicker"
+                    Title="Destination"
+                    ItemDisplayBinding="{Binding DisplayName}" />
+
+            <Button x:Name="GetRouteButton"
+                    Text="Get walking route"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    BackgroundColor="#111111"
+                    TextColor="White"
+                    CornerRadius="22"
+                    HeightRequest="48"
+                    Clicked="GetRoute_Clicked" />
+
+            <Label x:Name="StatusLabel"
+                   FontSize="13"
+                   TextColor="#B00020"
+                   IsVisible="False" />
+
+            <Label x:Name="RouteSummaryLabel"
+                   FontSize="14"
+                   TextColor="#1976D2"
+                   FontAttributes="Bold"
+                   IsVisible="False" />
+        </VerticalStackLayout>
+
+        <!-- Map -->
+        <Grid Grid.Row="1">
+            <mapsui:MapControl x:Name="MapView" />
+
+            <ActivityIndicator x:Name="LoadingIndicator"
+                                IsRunning="False"
+                                IsVisible="False"
+                                Color="#111111"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

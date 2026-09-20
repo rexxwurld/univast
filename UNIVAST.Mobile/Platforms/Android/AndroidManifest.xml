@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- usesCleartextTraffic is set in MainApplication.cs (Debug only). allowBackup is off so SecureStorage keys
+	     never get restored onto a device where they can no longer be decrypted. -->
+	<application android:allowBackup="false" android:icon="@mipmap/appicon" android:supportsRtl="true" android:label="UNIVAST"></application>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<!-- Foreground location only (map centering + nearby search). Background location
+	     was removed: the app never uses it, and Google Play requires a special
+	     justification and review for it. -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<!-- Android 11+ package-visibility requirement: without these, Map.OpenAsync and
+	     PhoneDialer.Default.Open silently fail with "no app can handle that request". -->
+	<queries>
+		<intent>
+			<action android:name="android.intent.action.VIEW" />
+			<data android:scheme="geo" />
+		</intent>
+		<intent>
+			<action android:name="android.intent.action.DIAL" />
+			<data android:scheme="tel" />
+		</intent>
+	</queries>
+</manifest>

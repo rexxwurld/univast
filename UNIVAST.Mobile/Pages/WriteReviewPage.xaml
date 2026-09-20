@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UNIVAST.Mobile.Pages.WriteReviewPage"
+             Title="Write a review"
+             BackgroundColor="#F5F5F5">
+
+    <VerticalStackLayout Padding="24" Spacing="16">
+
+        <Label Text="Your rating" FontSize="16" TextColor="#111111" />
+
+        <HorizontalStackLayout x:Name="StarsRow" Spacing="6">
+            <Button x:Name="Star1" Text="☆" FontSize="28" BackgroundColor="Transparent" TextColor="#FFA000" Clicked="Star1_Clicked" />
+            <Button x:Name="Star2" Text="☆" FontSize="28" BackgroundColor="Transparent" TextColor="#FFA000" Clicked="Star2_Clicked" />
+            <Button x:Name="Star3" Text="☆" FontSize="28" BackgroundColor="Transparent" TextColor="#FFA000" Clicked="Star3_Clicked" />
+            <Button x:Name="Star4" Text="☆" FontSize="28" BackgroundColor="Transparent" TextColor="#FFA000" Clicked="Star4_Clicked" />
+            <Button x:Name="Star5" Text="☆" FontSize="28" BackgroundColor="Transparent" TextColor="#FFA000" Clicked="Star5_Clicked" />
+        </HorizontalStackLayout>
+
+        <Border BackgroundColor="White" StrokeThickness="0" Padding="14,8" StrokeShape="RoundRectangle 12">
+            <Editor x:Name="TextEditor"
+                    Placeholder="Share details of your experience (optional)"
+                    AutoSize="TextChanges"
+                    HeightRequest="120" />
+        </Border>
+
+        <Label x:Name="ErrorLabel" IsVisible="False" TextColor="#B00020" FontSize="13" />
+
+        <Button x:Name="SubmitButton"
+                Text="Post review"
+                BackgroundColor="#1976D2"
+                TextColor="White"
+                CornerRadius="24"
+                HeightRequest="50"
+                Clicked="Submit_Clicked" />
+
+        <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False" Color="#1976D2" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

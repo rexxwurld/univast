@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:UNIVAST.Mobile.ViewModels"
+             x:Class="UNIVAST.Mobile.Pages.RegisterPage"
+             x:DataType="vm:RegisterViewModel"
+             Title="Create account"
+             BackgroundColor="#F5F5F5">
+
+    <VerticalStackLayout Padding="24" Spacing="14" VerticalOptions="Center">
+
+        <Label Text="Create your account"
+               FontSize="26"
+               FontAttributes="Bold"
+               TextColor="#111111" />
+
+        <Border BackgroundColor="White" StrokeThickness="0" Padding="14,4" StrokeShape="RoundRectangle 12">
+            <Entry Text="{Binding Name}" Placeholder="Full name" />
+        </Border>
+
+        <Border BackgroundColor="White" StrokeThickness="0" Padding="14,4" StrokeShape="RoundRectangle 12">
+            <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email" />
+        </Border>
+
+        <Border BackgroundColor="White" StrokeThickness="0" Padding="14,4" StrokeShape="RoundRectangle 12">
+            <Entry Text="{Binding Password}" Placeholder="Password (min 8 characters)" IsPassword="True" />
+        </Border>
+
+        <Label Text="{Binding ErrorMessage}"
+               IsVisible="{Binding HasError}"
+               TextColor="#B00020"
+               FontSize="13" />
+
+        <Button Text="Create account"
+                BackgroundColor="#1976D2"
+                TextColor="White"
+                CornerRadius="24"
+                HeightRequest="50"
+                Margin="0,10,0,0"
+                Command="{Binding RegisterCommand}" />
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" Color="#1976D2" />
+
+    </VerticalStackLayout>
+
+</ContentPage>
