@@ -98,7 +98,7 @@ const getNearby = asyncHandler(async (req, res) => {
 
 const getOne = asyncHandler(async (req, res) => {
   const place = await Place.findById(req.params.id).populate("category", "name slug icon");
-  if (!place) throw new ApiError(404, "Place not found");
+  if (!place || !place.isActive) throw new ApiError(404, "Place not found");
   res.status(200).json(place);
 });
 
