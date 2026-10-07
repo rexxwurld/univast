@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.Communication;
 using Microsoft.Maui.Devices.Sensors;
@@ -337,7 +338,7 @@ public partial class PlaceDetailPage : ContentPage
     {
         if (string.IsNullOrWhiteSpace(_place?.SourceCampusId)) return;
         // The map is the one place campuses are viewed and routed on: go back to it with this place's campus open.
-        CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Send(
+        WeakReferenceMessenger.Default.Send(
             new ViewCampusOnMapMessage(_place.SourceCampusId, _place.Location.Latitude, _place.Location.Longitude));
         await Shell.Current.GoToAsync("//MainPage");
     }
