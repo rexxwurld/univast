@@ -568,7 +568,7 @@ public class CampusSearchBehaviourTests
 
         await vm.SelectSearchResultAsync(hit);
 
-        var move = Assert.Single(cameras.Where(c => c.Target == CameraTarget.Point));
+        var move = Assert.Single(cameras, c => c.Target == CameraTarget.Point);
         Assert.Equal(1.5, move.Latitude);
         Assert.Equal(2.5, move.Longitude);
         Assert.Null(vm.DestinationError);

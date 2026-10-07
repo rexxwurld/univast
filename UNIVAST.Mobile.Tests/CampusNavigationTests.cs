@@ -614,7 +614,7 @@ public class CampusNavigationViewModelTests
         cameras.Clear();
 
         location.Raise(RouteSample.OnFirstLeg(20));
-        Assert.Single(cameras.Where(c => c.Target == CameraTarget.Follow));
+        Assert.Single(cameras, c => c.Target == CameraTarget.Follow);
 
         vm.ToggleFollowCommand.Execute(null);
         Assert.False(vm.FollowUser);
