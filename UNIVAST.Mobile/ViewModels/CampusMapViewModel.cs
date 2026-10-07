@@ -278,16 +278,18 @@ public partial class CampusMapViewModel : ObservableObject
         ErrorMessage = null;
         IsCampusPickerOpen = false;
 
-        var locationTask = AcquireLocationAsync(requestPermission: true);
-        await LoadCampusDirectoryAsync();
-        await locationTask;
+        // 1) Where is the user? This must never wait for the network: the map goes to the user as soon as the
+        //    device has a fix, even if the campus server is slow, asleep or unreachable.
+        await AcquireLocationAsync(requestPermission: true);
 
         // Normal map: show where the user is. A campus the user already opened is never pulled away from.
         if (Campus is null && UserFix is { IsValid: true } fix)
             CameraRequested?.Invoke(this, new CameraRequest(CameraTarget.User, fix.Latitude, fix.Longitude, Zoom: 15));
-
-        if (Campus is null) await DetectNearbyCampusesAsync();
         await StartLiveLocationAsync();
+
+        // 2) The campus directory (search hits, "near you") loads afterwards and can fail without affecting the map.
+        await LoadCampusDirectoryAsync();
+        if (Campus is null) await DetectNearbyCampusesAsync();
     }
 
     /// <summary>Loads the campus directory from the API, or from installed offline packs. Never blocks or throws.</summary>
