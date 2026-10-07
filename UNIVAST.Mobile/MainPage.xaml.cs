@@ -65,7 +65,13 @@ public partial class MainPage : ContentPage
 
         _vm.MapContentChanged += (_, _) => MainThread.BeginInvokeOnMainThread(RebuildMarkerLayers);
         _vm.UserLocationChanged += (_, _) => MainThread.BeginInvokeOnMainThread(RebuildUserLayer);
-        _vm.CameraRequested += (_, request) => MainThread.BeginInvokeOnMainThread(() => ApplyCamera(request));
+        _vm.CameraRequested += (_, request) => MainThread.BeginInvokeOnMainThread(() =>
+        {
+            // The start-up move to the user can arrive while Mapsui is still laying the map out, and Mapsui then
+            // resets the view to the whole world. Re-applying it shortly afterwards makes it stick.
+            if (request.Target == CameraTarget.User && request.Zoom == StartupZoom) ApplyCameraAndSettle(request);
+            else ApplyCamera(request);
+        });
 
         // An existing UNIVAST place/business was chosen from the search results: open its own detail screen.
         _vm.PlaceRequested += (_, placeId) => MainThread.BeginInvokeOnMainThread(async () =>
@@ -151,6 +157,10 @@ public partial class MainPage : ContentPage
             IsNorthingButtonVisible = false,
             IsMyLocationButtonVisible = false,
         };
+        // Mapsui's built-in "my location" marker can sit at latitude 0, longitude 0 until it gets a fix. We draw our own
+        // location dot, so the built-in one stays off.
+        _mapView.MyLocationEnabled = false;
+        _mapView.MyLocationLayer.Enabled = false;
         _mapView.Info += OnMapInfo;
         _mapView.SizeChanged += (_, _) =>
         {
@@ -314,6 +324,21 @@ public partial class MainPage : ContentPage
         _userLayer = new MemoryLayer { Name = LayerUser, Features = new List<IFeature> { me } };
         map.Layers.Add(_userLayer);
         _mapView.RefreshGraphics();
+    }
+
+    private const double StartupZoom = 15;
+
+    private void ApplyCameraAndSettle(CameraRequest request)
+    {
+        ApplyCamera(request);
+        foreach (var delayMs in new[] { 300, 1200 })
+        {
+            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(delayMs), () =>
+            {
+                // Only while nothing else has taken the map (a campus, a selected place, search).
+                if (_vm.Campus is null && !_vm.HasDestination && !_vm.IsSearchOpen) ApplyCamera(request);
+            });
+        }
     }
 
     private void ApplyCamera(CameraRequest request)
