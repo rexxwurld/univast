@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: backend
@@ -34,12 +34,12 @@ jobs:
         env:
           NODE_ENV: test
           MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/.mongodb-binaries
-          # Known-good binary for ubuntu-latest runners.
+          # Known-good MongoDB binary build; works on the ubuntu-24.04 runner.
           MONGOMS_DISTRO: ubuntu-22.04
 
   mobile-tests:
     # Plain .NET unit tests (token refresh/retry handler, error unwrapping, DTOs). No MAUI workload needed.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
