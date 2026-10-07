@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Plain net10.0 test project. The MAUI app can't be referenced from here (it only targets
+       android/ios/maccatalyst/windows), so the platform-independent source files are linked in
+       directly. Anything that touches MAUI APIs (SecureStorage, Preferences, pages) stays out;
+       that's why TokenStore sits behind the ITokenStore interface. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>UNIVAST.Mobile.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\UNIVAST.Mobile\Models\*.cs" LinkBase="Linked\Models" />
+    <Compile Include="..\UNIVAST.Mobile\Services\ApiResponse.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\UNIVAST.Mobile\Services\UnivastApiException.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\UNIVAST.Mobile\Services\ITokenStore.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\UNIVAST.Mobile\Services\AuthHeaderHandler.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\UNIVAST.Mobile\Services\DiscoveryApiService.cs" LinkBase="Linked\Services" />
+    <!-- Phase 3 campus homepage: platform-independent logic, API client and view model. MauiLocationProvider,
+         MainPage and the map drawing stay out (they use MAUI/Mapsui). -->
+    <Compile Include="..\UNIVAST.Mobile\Services\Campus\*.cs" LinkBase="Linked\Services\Campus" />
+    <!-- Offline pack manager; its MAUI/SQLite-backed CampusPackStore is replaced by CampusPackStoreStub.cs. -->
+    <Compile Include="..\UNIVAST.Mobile\Services\CampusPackManager.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\UNIVAST.Mobile\ViewModels\CampusMapViewModel.cs" LinkBase="Linked\ViewModels" />
+    <Compile Include="..\UNIVAST.Mobile\ViewModels\CampusNavigationViewModel.cs" LinkBase="Linked\ViewModels" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
+    <!-- Needed to compile the linked CampusMapViewModel ([ObservableProperty]/[RelayCommand]). -->
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        UNIVAST colour system. This is the ONLY place colours are defined. Pages, styles and the map
+        (see Services/Campus/MapPalette.cs, which reads these keys) use these tokens; no screen defines its own.
+
+        One accent:      UvBlue (+ UvBlueSoft tint). Used for primary actions, selection, the user's location,
+                         the active route. Nothing else is blue.
+        Neutral surfaces: UvSurface (cards, sheets, search), UvBackground (page), UvHairline (dividers/borders).
+        Text hierarchy:   UvText (primary), UvMuted (secondary/captions), UvOnAccent (text on UvBlue / UvInk).
+        Semantic only:    UvSuccess = confirmed/on campus, UvWarning = caution/demo/offline, UvDanger = errors and
+                         destructive actions. Never decoration.
+        UvInk:            the dark neutral used for transient toasts and the active-navigation banner.
+
+        The app is light-only (see App.xaml.cs: UserAppTheme = Light). To add a dark theme later, swap these values
+        in a second dictionary; no screen needs to change.
+    -->
+
+    <Color x:Key="UvBlue">#1F6FEB</Color>
+    <Color x:Key="UvBlueSoft">#E8F0FE</Color>
+
+    <Color x:Key="UvBackground">#F3F5F9</Color>
+    <Color x:Key="UvSurface">#FFFFFF</Color>
+    <Color x:Key="UvHairline">#E3E8EF</Color>
+
+    <Color x:Key="UvText">#0B1F3A</Color>
+    <Color x:Key="UvMuted">#5B6777</Color>
+    <Color x:Key="UvOnAccent">#FFFFFF</Color>
+    <Color x:Key="UvInk">#0B1F3A</Color>
+    <Color x:Key="UvInkMuted">#9DB8D8</Color>
+
+    <Color x:Key="UvSuccess">#067647</Color>
+    <Color x:Key="UvSuccessSoft">#ECFDF3</Color>
+    <Color x:Key="UvWarning">#B54708</Color>
+    <Color x:Key="UvWarningSoft">#FEF0C7</Color>
+    <Color x:Key="UvDanger">#D92D20</Color>
+    <Color x:Key="UvDangerSoft">#FEF3F2</Color>
+
+    <Color x:Key="UvScrim">#800B1F3A</Color>
+
+    <!--
+        Names the stock MAUI styles in Styles.xaml refer to (Entry, Button, Switch, Shell...). They are mapped onto the
+        tokens above so the whole app, including controls without an explicit style, uses the same palette.
+    -->
+    <Color x:Key="Primary">#1F6FEB</Color>
+    <Color x:Key="PrimaryDark">#1F6FEB</Color>
+    <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
+    <Color x:Key="Secondary">#E8F0FE</Color>
+    <Color x:Key="Tertiary">#0B1F3A</Color>
+
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#0B1F3A</Color>
+    <Color x:Key="Gray100">#E3E8EF</Color>
+    <Color x:Key="Gray200">#C9D1DC</Color>
+    <Color x:Key="Gray300">#A6B0BE</Color>
+    <Color x:Key="Gray400">#8A95A5</Color>
+    <Color x:Key="Gray500">#5B6777</Color>
+    <Color x:Key="Gray600">#3A4658</Color>
+    <Color x:Key="Gray900">#0B1F3A</Color>
+    <Color x:Key="Gray950">#0B1F3A</Color>
+
+    <SolidColorBrush x:Key="UvInkBrush" Color="{StaticResource UvInk}"/>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+</ResourceDictionary>

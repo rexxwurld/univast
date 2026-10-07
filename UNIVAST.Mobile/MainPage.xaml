@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+             x:Class="UNIVAST.Mobile.MainPage"
+             x:Name="RootPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource UvBackground}">
+
+    <!-- Colours and component styles (Float, Sheet, PrimaryButton, Title, Body…) are app-wide: see App.xaml and Resources/Styles. -->
+    <!-- Map-first homepage. The map (inserted at index 0 by MainPage.xaml.cs) fills the screen and is always usable;
+         everything else floats above it. Campus UI (chip, check-in, close) only appears while a campus is open;
+         the "near you" suggestion is a dismissible card, never a blocking screen. -->
+    <Grid x:Name="RootGrid">
+
+        <!-- ===== top: search, campus chip, presence ===== -->
+        <VerticalStackLayout Margin="14,10,14,0" Spacing="10" VerticalOptions="Start"
+                             IsVisible="{Binding ShowBrowseOverlays}">
+
+            <!-- Search pill + menu -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 28" Padding="16,0,8,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" HeightRequest="54">
+                        <shapes:Path Data="M10.5,3 A7.5,7.5 0 1 0 10.5,18 A7.5,7.5 0 1 0 10.5,3 M16,16 L21,21"
+                                     Stroke="{StaticResource UvMuted}" StrokeThickness="2" StrokeLineCap="Round"
+                                     Aspect="Uniform" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" />
+                        <Entry x:Name="SearchEntry" Grid.Column="1"
+                               Placeholder="Search places, campuses, rooms"
+                               PlaceholderColor="{StaticResource UvMuted}"
+                               TextColor="{StaticResource UvText}"
+                               BackgroundColor="Transparent"
+                               Text="{Binding SearchText, Mode=TwoWay}"
+                               MaxLength="100" FontSize="16" VerticalOptions="Center"
+                               ReturnType="Search" ClearButtonVisibility="WhileEditing"
+                               Focused="SearchEntry_Focused"
+                               TextChanged="SearchEntry_TextChanged"
+                               Completed="SearchEntry_Completed"
+                               AutomationId="MapSearchEntry" />
+                        <Button Grid.Column="2" Text="Cancel" Style="{StaticResource TextButton}"
+                                TextColor="{StaticResource UvBlue}" Padding="10,0"
+                                IsVisible="{Binding IsSearchOpen}" Clicked="SearchCancel_Clicked" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource MapFab}" WidthRequest="54" HeightRequest="54"
+                        StrokeShape="RoundRectangle 27" AutomationId="MenuButton">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Menu_Tapped" />
+                    </Border.GestureRecognizers>
+                    <shapes:Path Data="M4,7 L20,7 M4,12 L20,12 M4,17 L20,17"
+                                 Stroke="{StaticResource UvInk}" StrokeThickness="2" StrokeLineCap="Round"
+                                 Aspect="Uniform" WidthRequest="20" HeightRequest="20"
+                                 HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Campus context: only while a campus is open (viewing remotely or checked in) -->
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="{Binding ShowCampusRow}">
+                <HorizontalStackLayout Spacing="8">
+                    <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 18" Padding="12,7,10,7" MaximumWidthRequest="260">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ShowCampusPickerCommand}" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="{Binding CampusLabel}" Style="{StaticResource BodyStrong}" FontFamily="OpenSansSemibold" FontSize="13"
+                                   LineBreakMode="TailTruncation" MaxLines="1" VerticalOptions="Center" />
+                            <shapes:Path Data="M6,9 L12,15 L18,9" Stroke="{StaticResource UvMuted}" StrokeThickness="2.5" StrokeLineCap="Round"
+                                         StrokeLineJoin="Round" Aspect="Uniform" WidthRequest="12" HeightRequest="12"
+                                         VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- Presence: neutral, with the success tint only when the device is really on/near campus -->
+                    <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 18" Padding="12,7" MaximumWidthRequest="230">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding PresenceIsPositive}" Value="True">
+                                <Setter Property="BackgroundColor" Value="{StaticResource UvSuccessSoft}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label Text="{Binding Presence.Title}" Style="{StaticResource BodyStrong}" FontFamily="OpenSansSemibold" FontSize="13"
+                               LineBreakMode="TailTruncation" MaxLines="1" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 18" Padding="12,7"
+                            BackgroundColor="{StaticResource UvBlueSoft}" IsVisible="{Binding IsCheckedIn}">
+                        <Label Text="Checked in" Style="{StaticResource Link}" FontSize="13" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 18" Padding="12,7"
+                            BackgroundColor="{StaticResource UvBlue}" IsVisible="{Binding CanCheckIn}" AutomationId="CheckInButton">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding CheckInCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="Check in" FontFamily="OpenSansSemibold" FontSize="13" TextColor="{StaticResource UvOnAccent}" VerticalOptions="Center" />
+                    </Border>
+
+                    <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 18" Padding="12,7"
+                            AutomationId="CloseCampusButton">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ExitCampusCommand}" />
+                        </Border.GestureRecognizers>
+                        <Label Text="Close campus" Style="{StaticResource Caption}" FontFamily="OpenSansSemibold" FontSize="13" VerticalOptions="Center" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- Non-blocking "campus near you" suggestion. Nothing is opened until the user taps it. -->
+            <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 20" Padding="16,12"
+                    IsVisible="{Binding ShowNearbySuggestion}" AutomationId="NearbyCampusSuggestion">
+                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                    <Label Text="{Binding NearbySuggestionText}" FontSize="14" FontFamily="OpenSansSemibold"
+                           TextColor="{StaticResource UvText}" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="View" Style="{StaticResource TonalButton}" HeightRequest="36" Padding="16,0"
+                            Command="{Binding OpenNearbySuggestionCommand}" />
+                    <Button Grid.Column="2" Text="Dismiss" Style="{StaticResource TextButton}" HeightRequest="36" Padding="8,0"
+                            Command="{Binding DismissNearbySuggestionCommand}" />
+                </Grid>
+            </Border>
+
+            <!-- One-line notices (check-in help, campus not available) -->
+            <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 16" Padding="14,10"
+                    BackgroundColor="{StaticResource UvInk}" IsVisible="{Binding HasNotice}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <Label Text="{Binding Notice}" TextColor="{StaticResource UvOnAccent}" FontSize="13" VerticalOptions="Center" />
+                    <Button Grid.Column="1" Text="OK" Command="{Binding DismissNoticeCommand}" BackgroundColor="{StaticResource UvSurface}"
+                            TextColor="{StaticResource UvInk}" FontSize="12" HeightRequest="32" CornerRadius="16" Padding="12,0" />
+                </Grid>
+            </Border>
+
+            <Label Text="Offline campus data" IsVisible="{Binding IsOfflineMode}"
+                   TextColor="{StaticResource UvWarning}" FontSize="12" FontFamily="OpenSansSemibold" Margin="6,0,0,0" />
+
+            <!-- Search results -->
+            <Border Style="{StaticResource Float}" IsVisible="{Binding IsSearchOpen}"
+                    StrokeShape="RoundRectangle 22" Padding="16,12" MaximumHeightRequest="380">
+                <ScrollView>
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsSearching}">
+                            <ActivityIndicator IsRunning="{Binding IsSearching}" HeightRequest="20" WidthRequest="20" Color="{StaticResource UvBlue}" />
+                            <Label Text="Searching…" Style="{StaticResource Body}" />
+                        </HorizontalStackLayout>
+
+                        <VerticalStackLayout IsVisible="{Binding ShowSearchHint}" Spacing="10">
+                            <Label Text="Search a city, street, business, university, building, room (like LT1) or landmark."
+                                   Style="{StaticResource Body}" />
+                            <!-- Real campuses from the directory: view any of them from anywhere. -->
+                            <VerticalStackLayout IsVisible="{Binding ShowExplore}" Spacing="0">
+                                <Label Text="CAMPUSES" Style="{StaticResource Overline}" Margin="0,4,0,2" />
+                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding ExploreCampuses}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid ColumnDefinitions="*,Auto" MinimumHeightRequest="52" Padding="0,6">
+                                                <Grid.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ChooseCampusCommand}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Grid.GestureRecognizers>
+                                                <VerticalStackLayout VerticalOptions="Center" Spacing="1">
+                                                    <Label Text="{Binding Name}" Style="{StaticResource Title}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                                    <Label Text="{Binding University.Name}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                                </VerticalStackLayout>
+                                                <Label Grid.Column="1" Text="View" Style="{StaticResource Link}" VerticalOptions="Center" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout IsVisible="{Binding ShowSearchEmpty}" Spacing="2">
+                            <Label Text="No results found" Style="{StaticResource Title}" FontSize="16" />
+                            <Label Text="{Binding SearchMessage}" Style="{StaticResource Body}" FontSize="13" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout IsVisible="{Binding ShowSearchFailed}" Spacing="8">
+                            <Label Text="{Binding SearchMessage}" Style="{StaticResource ErrorText}" />
+                            <Button Text="Try again" Clicked="SearchRetry_Clicked" HorizontalOptions="Start"
+                                    Style="{StaticResource TonalButton}" Padding="20,0" />
+                        </VerticalStackLayout>
+
+                        <Border Style="{StaticResource Pill}" BackgroundColor="{StaticResource UvWarningSoft}"
+                                HorizontalOptions="Start" IsVisible="{Binding ShowAmbiguityHint}">
+                            <Label Text="More than one place matches. Check the building and floor." TextColor="{StaticResource UvWarning}" FontSize="12" />
+                        </Border>
+
+                        <VerticalStackLayout IsVisible="{Binding ShowSearchResults}"
+                                             BindableLayout.ItemsSource="{Binding SearchSections}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <VerticalStackLayout Spacing="0" Margin="0,6,0,4">
+                                        <Label Text="{Binding Title}" Style="{StaticResource Overline}" Margin="0,0,0,2" />
+                                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid ColumnDefinitions="40,*,Auto" ColumnSpacing="12" MinimumHeightRequest="60" Padding="0,8">
+                                                        <Grid.GestureRecognizers>
+                                                            <TapGestureRecognizer
+                                                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.SelectSearchResultCommand}"
+                                                                CommandParameter="{Binding Result}" />
+                                                        </Grid.GestureRecognizers>
+                                                        <Border BackgroundColor="{StaticResource UvBlueSoft}" StrokeThickness="0"
+                                                                StrokeShape="RoundRectangle 20" WidthRequest="40" HeightRequest="40" VerticalOptions="Center">
+                                                            <shapes:Path Data="M12,21 C12,21 5,14.5 5,9.5 A7,7 0 0 1 19,9.5 C19,14.5 12,21 12,21 Z M12,7.5 A2,2 0 1 0 12,11.5 A2,2 0 1 0 12,7.5"
+                                                                         Stroke="{StaticResource UvBlue}" StrokeThickness="1.8" StrokeLineJoin="Round"
+                                                                         Aspect="Uniform" WidthRequest="18" HeightRequest="18"
+                                                                         HorizontalOptions="Center" VerticalOptions="Center" />
+                                                        </Border>
+                                                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                                            <Label Text="{Binding Title}" FontSize="16" Style="{StaticResource Title}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                                            <Label Text="{Binding TypeLine}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                                            <Label Text="{Binding ContextLine}" Style="{StaticResource Caption}"
+                                                                   IsVisible="{Binding HasContext}" LineBreakMode="TailTruncation" MaxLines="1" />
+                                                        </VerticalStackLayout>
+                                                        <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center" HorizontalOptions="End">
+                                                            <Border Style="{StaticResource Pill}" BackgroundColor="{StaticResource UvBlueSoft}"
+                                                                    IsVisible="{Binding IsCampusData}">
+                                                                <Label Text="UNIVAST" FontSize="10" FontFamily="OpenSansSemibold" TextColor="{StaticResource UvBlue}" />
+                                                            </Border>
+                                                            <Border Style="{StaticResource Pill}" BackgroundColor="{StaticResource UvWarningSoft}"
+                                                                    IsVisible="{Binding IsDemoData}">
+                                                                <Label Text="Demo" FontSize="10" TextColor="{StaticResource UvWarning}" />
+                                                            </Border>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- ===== map controls (right edge, clear of the search row) ===== -->
+        <VerticalStackLayout x:Name="MapControls" Spacing="12" HorizontalOptions="End" VerticalOptions="End"
+                             Margin="0,0,14,28">
+            <Border Style="{StaticResource MapFab}" IsVisible="{Binding HasCampus}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding FitCampusCommand}" />
+                </Border.GestureRecognizers>
+                <shapes:Path Data="M4,9 L4,4 L9,4 M15,4 L20,4 L20,9 M20,15 L20,20 L15,20 M9,20 L4,20 L4,15"
+                             Stroke="{StaticResource UvInk}" StrokeThickness="2" StrokeLineCap="Round" StrokeLineJoin="Round"
+                             Aspect="Uniform" WidthRequest="20" HeightRequest="20"
+                             HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+            <Border Style="{StaticResource MapFab}" BackgroundColor="{StaticResource UvBlue}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding RecenterCommand}" />
+                </Border.GestureRecognizers>
+                <shapes:Path Data="M12,8 A4,4 0 1 0 12,16 A4,4 0 1 0 12,8 M12,2 L12,5 M12,19 L12,22 M2,12 L5,12 M19,12 L22,12"
+                             Stroke="{StaticResource UvOnAccent}" StrokeThickness="2" StrokeLineCap="Round"
+                             Aspect="Uniform" WidthRequest="22" HeightRequest="22"
+                             HorizontalOptions="Center" VerticalOptions="Center" />
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- ===== status card: one calm message instead of stacked grey chips ===== -->
+        <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 22" Padding="18,16"
+                Margin="14,0,78,28" VerticalOptions="End" IsVisible="{Binding HasMapEmptyMessage}">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="{Binding MapEmptyMessage}" Style="{StaticResource Title}" FontSize="17" />
+                <Label Text="{Binding Presence.Detail}" Style="{StaticResource Body}" FontSize="13"
+                       IsVisible="{Binding PresenceDetailVisible}" />
+                <Button Text="Help map this campus" Style="{StaticResource TonalButton}" HorizontalOptions="Start"
+                        Padding="18,0" Clicked="Contribute_Clicked" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Border Style="{StaticResource Float}" StrokeShape="RoundRectangle 16" Padding="14,10"
+                Margin="14,0,78,28" VerticalOptions="End" IsVisible="{Binding HasLocationMessage}"
+                BackgroundColor="{StaticResource UvInk}">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{Binding LocationMessage}" TextColor="{StaticResource UvOnAccent}" FontSize="13" />
+                <Button Text="Open Settings" IsVisible="{Binding CanOpenLocationSettings}" HorizontalOptions="Start"
+                        Command="{Binding OpenLocationSettingsCommand}" BackgroundColor="{StaticResource UvSurface}" TextColor="{StaticResource UvInk}"
+                        FontSize="12" HeightRequest="36" CornerRadius="18" Padding="14,0" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ===== place card (bottom sheet): the map stays visible above it ===== -->
+        <Border Style="{StaticResource Sheet}" IsVisible="{Binding ShowDestinationSheet}" MaximumHeightRequest="460">
+            <ScrollView>
+                <VerticalStackLayout Spacing="10">
+                    <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="{StaticResource UvHairline}"
+                             HorizontalOptions="Center" Margin="0,0,0,4" />
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding Destination.Title}" Style="{StaticResource PlaceName}" />
+                            <Label Text="{Binding Destination.Subtitle}" Style="{StaticResource Body}"
+                                   IsVisible="{Binding DestinationSubtitleVisible}" />
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" BackgroundColor="{StaticResource UvBackground}" StrokeThickness="0"
+                                StrokeShape="RoundRectangle 18" WidthRequest="36" HeightRequest="36" VerticalOptions="Start"
+                                AutomationId="CloseDestinationButton">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding CloseDestinationCommand}" />
+                            </Border.GestureRecognizers>
+                            <shapes:Path Data="M6,6 L18,18 M18,6 L6,18" Stroke="{StaticResource UvMuted}" StrokeThickness="2"
+                                         StrokeLineCap="Round" Aspect="Uniform" WidthRequest="14" HeightRequest="14"
+                                         HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+
+                    <!-- Source + type: a general map place is never mistaken for UNIVAST campus data -->
+                    <HorizontalStackLayout Spacing="8">
+                        <Border Style="{StaticResource Pill}" BackgroundColor="{StaticResource UvBlueSoft}">
+                            <Label Text="{Binding DestinationSourceLabel}" FontSize="12" TextColor="{StaticResource UvBlue}" FontFamily="OpenSansSemibold" />
+                        </Border>
+                        <Border Style="{StaticResource Pill}">
+                            <Label Text="{Binding Destination.TypeLabel}" FontSize="12" TextColor="{StaticResource UvMuted}" FontFamily="OpenSansSemibold" />
+                        </Border>
+                        <Border Style="{StaticResource Pill}" BackgroundColor="{StaticResource UvWarningSoft}"
+                                IsVisible="{Binding Destination.IsDemoData}">
+                            <Label Text="Demo data" FontSize="12" TextColor="{StaticResource UvWarning}" />
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <!-- University › Campus › Building › Floor (campus places only) -->
+                    <Label Text="{Binding DestinationTrail}" IsVisible="{Binding HasDestinationTrail}" Style="{StaticResource Caption}" />
+                    <Label Text="{Binding DestinationAliasesText}" IsVisible="{Binding HasDestinationAliases}" Style="{StaticResource Body}" />
+                    <Label Text="{Binding DestinationFactsText}" IsVisible="{Binding HasDestinationFacts}" Style="{StaticResource Body}" />
+                    <Label Text="{Binding DestinationSourceHint}" IsVisible="{Binding HasDestinationSourceHint}" Style="{StaticResource Caption}" />
+                    <Label Text="{Binding DestinationCoordinatesText}" IsVisible="{Binding HasDestinationCoordinates}" Style="{StaticResource Caption}" />
+
+                    <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsLoadingDestination}">
+                        <ActivityIndicator IsRunning="{Binding IsLoadingDestination}" HeightRequest="18" WidthRequest="18" Color="{StaticResource UvBlue}" />
+                        <Label Text="Loading details…" Style="{StaticResource Caption}" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding DestinationError}" IsVisible="{Binding HasDestinationError}" Style="{StaticResource ErrorText}" />
+
+                    <!-- Actions: directions only where a real route exists; otherwise an honest reason -->
+                    <Button Text="Directions" Style="{StaticResource PrimaryButton}" Margin="0,6,0,0"
+                            IsVisible="{Binding ShowNavigateButton}"
+                            Command="{Binding NavigateFromHereCommand}" AutomationId="NavigateFromHereButton" />
+                    <Label Text="{Binding NavigateUnavailableText}" IsVisible="{Binding ShowNavigateUnavailable}" Style="{StaticResource Caption}" />
+                    <Button Text="Directions in your maps app" Style="{StaticResource TonalButton}"
+                            IsVisible="{Binding ShowOpenInMapsApp}" Clicked="OpenInMapsApp_Clicked" AutomationId="OpenInMapsAppButton" />
+                    <ActivityIndicator IsRunning="{Binding IsRouting}" IsVisible="{Binding IsRouting}"
+                                       Color="{StaticResource UvBlue}" HeightRequest="24" />
+
+                    <Label Text="{Binding RouteMessage}" IsVisible="{Binding HasRouteMessage}" Style="{StaticResource BodyStrong}" />
+                    <Button Text="Choose a starting point" IsVisible="{Binding NeedsStartPoint}" HorizontalOptions="Start"
+                            Style="{StaticResource TonalButton}" Padding="20,0" Clicked="ChooseStartPoint_Clicked" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding RouteSteps}" Spacing="6">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding .}" Style="{StaticResource BodyStrong}" />
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- ===== route preview ===== -->
+        <Border Style="{StaticResource Sheet}" IsVisible="{Binding Navigation.IsPreview}" MaximumHeightRequest="500">
+            <ScrollView>
+                <VerticalStackLayout Spacing="10">
+                    <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="{StaticResource UvHairline}"
+                             HorizontalOptions="Center" Margin="0,0,0,4" />
+                    <!-- Origin → destination, mode, and the distance/time the backend actually returned -->
+                    <Grid ColumnDefinitions="20,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="10">
+                        <shapes:Ellipse Fill="{StaticResource UvBlue}" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" HorizontalOptions="Center" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="0">
+                            <Label Text="From" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Navigation.OriginLabel}" Style="{StaticResource Title}" />
+                        </VerticalStackLayout>
+                        <shapes:Rectangle Grid.Row="1" Fill="{StaticResource UvText}" WidthRequest="10" HeightRequest="10" VerticalOptions="Center" HorizontalOptions="Center" />
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="0">
+                            <Label Text="To" Style="{StaticResource Caption}" />
+                            <Label Text="{Binding Navigation.DestinationTitle}" Style="{StaticResource Title}" />
+                            <Label Text="{Binding Navigation.DestinationSubtitle}" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                    <HorizontalStackLayout Spacing="8">
+                        <Border Style="{StaticResource Pill}" BackgroundColor="{StaticResource UvBlueSoft}">
+                            <Label Text="{Binding Navigation.ModeLabel}" FontSize="12" TextColor="{StaticResource UvBlue}" FontFamily="OpenSansSemibold" />
+                        </Border>
+                        <Label Text="{Binding Navigation.PreviewSummary}" Style="{StaticResource ScreenTitle}" FontSize="20" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding Navigation.IndoorGuidance}" Style="{StaticResource Body}" FontSize="13" />
+                    <Label Text="{Binding Navigation.StartHint}" IsVisible="{Binding Navigation.HasStartHint}" Style="{StaticResource Caption}"
+                           TextColor="{StaticResource UvWarning}" />
+                    <Label Text="{Binding Navigation.NavMessage}" IsVisible="{Binding Navigation.HasNavMessage}" Style="{StaticResource ErrorText}" />
+
+                    <Button Text="Start navigation" Style="{StaticResource PrimaryButton}" Margin="0,4,0,0"
+                            Command="{Binding StartNavigationCommand}" IsEnabled="{Binding Navigation.CanStart}"
+                            AutomationId="StartNavigationButton" />
+                    <Button Text="Cancel" Style="{StaticResource TextButton}"
+                            Command="{Binding Navigation.EndNavigationCommand}" AutomationId="CancelPreviewButton" />
+
+                    <Label Text="DIRECTIONS" Style="{StaticResource Overline}" Margin="0,6,0,0" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Navigation.PreviewSteps}" Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="36,*,Auto" ColumnSpacing="10">
+                                    <Label Text="{Binding Glyph}" FontSize="20" TextColor="{StaticResource UvBlue}"
+                                           HorizontalTextAlignment="Center" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding Text}" FontSize="14" TextColor="{StaticResource UvText}" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding DistanceText}" FontSize="12" Style="{StaticResource Body}" VerticalOptions="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- ===== active navigation: current instruction (top) ===== -->
+        <Border Style="{StaticResource Float}" IsVisible="{Binding Navigation.ShowGuidance}"
+                BackgroundColor="{StaticResource UvInk}" StrokeShape="RoundRectangle 24" Padding="18,14"
+                Margin="14,10,14,0" VerticalOptions="Start">
+            <VerticalStackLayout Spacing="6">
+                <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
+                    <Label Text="{Binding Navigation.CurrentGlyph}" FontSize="38" TextColor="{StaticResource UvOnAccent}"
+                           VerticalOptions="Center" HorizontalTextAlignment="Center" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                        <Label Text="{Binding Navigation.DistanceToNextText}" FontSize="15" TextColor="{StaticResource UvInkMuted}" />
+                        <Label Text="{Binding Navigation.CurrentInstruction}" FontSize="20" TextColor="{StaticResource UvOnAccent}" FontFamily="OpenSansSemibold" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Label Text="{Binding Navigation.NextInstruction, StringFormat='Then: {0}'}"
+                       IsVisible="{Binding Navigation.HasNextInstruction}" FontSize="13" TextColor="{StaticResource UvInkMuted}" Margin="64,0,0,0" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ===== active navigation: progress (bottom) ===== -->
+        <Border Style="{StaticResource Sheet}" IsVisible="{Binding Navigation.ShowGuidance}">
+            <VerticalStackLayout Spacing="8">
+                <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="{StaticResource UvHairline}"
+                         HorizontalOptions="Center" Margin="0,0,0,4" />
+                <HorizontalStackLayout Spacing="14">
+                    <Label Text="{Binding Navigation.RemainingTimeText}" FontSize="26" Style="{StaticResource Title}" />
+                    <Label Text="{Binding Navigation.RemainingDistanceText}" FontSize="18" Style="{StaticResource Body}" VerticalOptions="End" />
+                    <Label Text="{Binding Navigation.ArrivalTimeText, StringFormat='ETA {0}'}" FontSize="14"
+                           Style="{StaticResource Body}" VerticalOptions="End" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding Navigation.DestinationTitle}" FontSize="16" Style="{StaticResource Title}" />
+                <Label Text="{Binding Navigation.DestinationSubtitle}" Style="{StaticResource Body}" FontSize="13" />
+                <Label Text="{Binding Navigation.IndoorGuidance}" Style="{StaticResource Body}" FontSize="13" />
+                <HorizontalStackLayout Spacing="8" IsVisible="{Binding Navigation.IsRerouting}">
+                    <ActivityIndicator IsRunning="{Binding Navigation.IsRerouting}" HeightRequest="18" WidthRequest="18" Color="{StaticResource UvBlue}" />
+                    <Label Text="Finding a new route…" Style="{StaticResource Body}" FontSize="13" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding Navigation.NavMessage}" IsVisible="{Binding Navigation.HasNavMessage}"
+                       Style="{StaticResource ErrorText}" />
+                <Button Text="End navigation" IsVisible="{Binding Navigation.IsActive}"
+                        Command="{Binding Navigation.EndNavigationCommand}" Style="{StaticResource DangerButton}"
+                        HeightRequest="48" CornerRadius="24" Margin="0,4,0,0"
+                        AutomationId="EndNavigationButton" />
+                <Button Text="Done" IsVisible="{Binding Navigation.IsArrived}"
+                        Command="{Binding Navigation.EndNavigationCommand}" Style="{StaticResource PrimaryButton}"
+                        HeightRequest="48" CornerRadius="24" Margin="0,4,0,0" AutomationId="DoneNavigationButton" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ===== campus picker ===== -->
+        <Grid IsVisible="{Binding IsCampusPickerOpen}" BackgroundColor="{StaticResource UvScrim}">
+            <Border Style="{StaticResource Sheet}" MaximumHeightRequest="520">
+                <ScrollView>
+                    <VerticalStackLayout Spacing="12">
+                        <BoxView WidthRequest="40" HeightRequest="4" CornerRadius="2" Color="{StaticResource UvHairline}"
+                                 HorizontalOptions="Center" Margin="0,0,0,4" />
+                        <Label Text="Campuses" FontSize="22" Style="{StaticResource Title}" />
+                        <Label Text="You can view any campus from anywhere. You don't have to be there." Style="{StaticResource Body}" FontSize="13" />
+                        <Label Text="No campuses are available to browse right now." Style="{StaticResource Body}" FontSize="13"
+                               IsVisible="{Binding HasNoPickerChoices}" />
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding PickerChoices}" Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BackgroundColor="{StaticResource UvBackground}" StrokeThickness="0" Padding="16,12"
+                                            StrokeShape="RoundRectangle 16">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.ChooseCampusCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="{Binding Name}" FontSize="16" Style="{StaticResource Title}" />
+                                            <Label Text="{Binding University.Name}" Style="{StaticResource Body}" FontSize="13" />
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <Button Text="Close" Command="{Binding HideCampusPickerCommand}" Style="{StaticResource TextButton}" />
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </Grid>
+
+        <!-- ===== campus loading / error: inline, the map stays usable underneath ===== -->
+        <Border Style="{StaticResource Float}" IsVisible="{Binding IsLoading}" StrokeShape="RoundRectangle 22"
+                Padding="18,12" Margin="14,0,78,28" VerticalOptions="End">
+            <HorizontalStackLayout Spacing="12">
+                <ActivityIndicator IsRunning="{Binding IsLoading}" HeightRequest="22" WidthRequest="22" Color="{StaticResource UvBlue}" />
+                <Label Text="Loading campus…" Style="{StaticResource Body}" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Border>
+
+        <Border Style="{StaticResource Float}" IsVisible="{Binding IsError}" StrokeShape="RoundRectangle 22"
+                Padding="18,16" Margin="14,0,78,28" VerticalOptions="End">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Couldn't load the campus" FontSize="17" Style="{StaticResource Title}" />
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" FontSize="13" />
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="Try again" Command="{Binding RetryCommand}" Style="{StaticResource TonalButton}" Padding="18,0" />
+                    <Button Text="Back to map" Command="{Binding DismissCampusErrorCommand}" Style="{StaticResource TextButton}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+</ContentPage>

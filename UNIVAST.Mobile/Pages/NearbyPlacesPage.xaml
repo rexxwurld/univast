@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            
+             x:Class="UNIVAST.Mobile.NearbyPlacesPage"
+             Shell.NavBarIsVisible="True"
+             Title="Nearby places"
+             BackgroundColor="{StaticResource UvBackground}">
+
+    <Grid>
+
+        
+
+        <VerticalStackLayout Padding="20,45,20,0"
+                             Spacing="12"
+                             VerticalOptions="Start">
+
+            <Label Text="UNIVAST"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource UvText}" />
+
+            <Border BackgroundColor="{StaticResource UvSurface}"
+                    StrokeThickness="0"
+                    Padding="14,4"
+                    StrokeShape="RoundRectangle 18">
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                    <Label Text="☷" FontSize="18" TextColor="{StaticResource UvText}" VerticalOptions="Center" />
+                    <Entry x:Name="SearchEntry"
+                           Grid.Column="1"
+                           Placeholder="Search places around you"
+                           ReturnType="Search"
+                           Completed="SearchEntry_Completed" />
+                    <Button x:Name="SearchButton"
+                            Grid.Column="2"
+                            Text="Go"
+                            FontSize="14"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource UvBlue}"
+                            Clicked="SearchButton_Clicked" />
+                </Grid>
+
+            </Border>
+
+        </VerticalStackLayout>
+
+        <Button x:Name="AccountButton"
+                Text="Account"
+                FontSize="13"
+                BackgroundColor="{StaticResource UvSurface}"
+                TextColor="{StaticResource UvText}"
+                CornerRadius="18"
+                HeightRequest="36"
+                Padding="14,0"
+                Margin="0,44,20,0"
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Clicked="Account_Clicked" />
+
+        <Button x:Name="AddPlaceButton"
+                Text="＋ Add place"
+                FontSize="16"
+                FontAttributes="Bold"
+                BackgroundColor="{StaticResource UvSurface}"
+                TextColor="{StaticResource UvText}"
+                CornerRadius="25"
+                HeightRequest="52"
+                Margin="20,0,0,94"
+                HorizontalOptions="Start"
+                VerticalOptions="End"
+                Clicked="AddPlace_Clicked" />
+
+        <Border WidthRequest="52"
+                HeightRequest="52"
+                Margin="20,0,0,30"
+                BackgroundColor="{StaticResource UvSurface}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 26"
+                HorizontalOptions="Start"
+                VerticalOptions="End">
+
+            <Label Text="◎"
+                   FontSize="30"
+                   TextColor="{StaticResource UvBlue}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+
+        </Border>
+
+        <Button x:Name="ExploreButton"
+                Text="Explore"
+                FontSize="16"
+                FontAttributes="Bold"
+                BackgroundColor="{StaticResource UvText}"
+                TextColor="{StaticResource UvOnAccent}"
+                CornerRadius="25"
+                HeightRequest="52"
+                Margin="20,0,20,30"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Clicked="Explore_Clicked" />
+
+        <Border x:Name="ExplorePanel"
+                IsVisible="False"
+                BackgroundColor="{StaticResource UvSurface}"
+                StrokeThickness="0"
+                Padding="20"
+                VerticalOptions="End"
+                HeightRequest="330"
+                StrokeShape="RoundRectangle 28,28,0,0">
+
+            <VerticalStackLayout Spacing="18">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <Label Text="Explore"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource UvText}" />
+
+                    <Button Grid.Column="1"
+                            Text="✕"
+                            FontSize="18"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource UvMuted}"
+                            Clicked="CloseExplore_Clicked" />
+
+                </Grid>
+
+                <Label Text="Discover places around you"
+                       FontSize="14"
+                       TextColor="{StaticResource UvMuted}" />
+
+                <Label x:Name="NoCategoriesLabel"
+                       Text="Couldn't load categories."
+                       FontSize="13"
+                       TextColor="{StaticResource UvMuted}"
+                       IsVisible="False" />
+
+                <ScrollView HeightRequest="140">
+                    <FlexLayout x:Name="CategoryChipsPanel"
+                                Wrap="Wrap"
+                                Direction="Row"
+                                JustifyContent="Start"
+                                AlignItems="Start" />
+                </ScrollView>
+
+            </VerticalStackLayout>
+
+        </Border>
+
+        <ActivityIndicator x:Name="LocationLoadingIndicator"
+                            IsRunning="True"
+                            IsVisible="True"
+                            Color="{StaticResource UvBlue}"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
+
+        <Border x:Name="OfflineBanner"
+                IsVisible="False"
+                BackgroundColor="{StaticResource UvText}"
+                Opacity="0.85"
+                StrokeThickness="0"
+                Padding="16,10"
+                Margin="20,130,20,0"
+                StrokeShape="RoundRectangle 12"
+                VerticalOptions="Start"
+                HorizontalOptions="Fill">
+
+            <Label Text="📡  Showing saved places — you appear to be offline"
+                   FontSize="12"
+                   TextColor="{StaticResource UvOnAccent}"
+                   HorizontalTextAlignment="Center" />
+
+        </Border>
+
+    </Grid>
+
+</ContentPage>

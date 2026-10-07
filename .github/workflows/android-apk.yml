@@ -1,0 +1,161 @@
+name: Android APK
+
+# Builds a signed, installable UNIVAST APK.
+#   - every push to main / PR  -> APK is attached to the run as an artifact
+#   - push a tag like v1.0.0   -> APK is also published as a GitHub Release (easiest way to install on a phone)
+#   - Actions tab > "Android APK" > Run workflow (tick "release") -> same, without needing a tag
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Publish the APK as a GitHub Release
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # needed to create releases
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PROJECT: UNIVAST.Mobile/UNIVAST.Mobile.csproj
+      TFM: net10.0-android
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: 21
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('UNIVAST.Mobile/UNIVAST.Mobile.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      # Optional: set the repository variable API_BASE_URL (Settings > Secrets and variables > Actions > Variables)
+      # to bake a different backend URL into the app without editing code.
+      - name: Point the app at your backend
+        if: ${{ vars.API_BASE_URL != '' }}
+        env:
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+        run: |
+          sed -i -E "s|private const string RenderUrl = \"[^\"]*\";|private const string RenderUrl = \"${API_BASE_URL%/}\";|" UNIVAST.Mobile/Services/ApiConfig.cs
+          grep -n "RenderUrl =" UNIVAST.Mobile/Services/ApiConfig.cs
+
+      # An APK must be signed before Android will install it.
+      # Use your own key by adding these repository secrets (see README > "Install on your phone"):
+      #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+      # Without them a throwaway key is generated: the APK installs fine, but every build gets a
+      # different key, so you must uninstall the old app before installing a newer build.
+      - name: Prepare signing key
+        id: signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          KEYSTORE="$RUNNER_TEMP/univast.keystore"
+          if [ -n "$KEYSTORE_B64" ] && [ -n "$KEYSTORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$KEYSTORE"
+            echo "mode=release-key" >> "$GITHUB_OUTPUT"
+            echo "ANDROID_KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_ALIAS=$KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_PASSWORD=${KEY_PASSWORD:-$KEYSTORE_PASSWORD}" >> "$GITHUB_ENV"
+          else
+            GEN_PASS="$(openssl rand -hex 16)"
+            keytool -genkeypair -v -keystore "$KEYSTORE" -storetype PKCS12 \
+              -alias univast -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$GEN_PASS" -keypass "$GEN_PASS" \
+              -dname "CN=UNIVAST CI, O=UNIVAST, C=NG"
+            echo "mode=throwaway-key" >> "$GITHUB_OUTPUT"
+            echo "ANDROID_KEYSTORE_PASSWORD=$GEN_PASS" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_ALIAS=univast" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_PASSWORD=$GEN_PASS" >> "$GITHUB_ENV"
+          fi
+          echo "ANDROID_KEYSTORE_PATH=$KEYSTORE" >> "$GITHUB_ENV"
+
+      - name: Work out version
+        id: version
+        run: |
+          CODE="${{ github.run_number }}"
+          if [ "${{ github.ref_type }}" = "tag" ]; then NAME="${GITHUB_REF_NAME#v}"; else NAME="1.0.$CODE"; fi
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Build signed APK
+        run: |
+          dotnet publish "$PROJECT" -f "$TFM" -c Release \
+            -p:TargetFrameworks=net10.0-android \
+            -p:AndroidPackageFormat=apk \
+            -p:RuntimeIdentifier=android-arm64 \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="$ANDROID_KEYSTORE_PATH" \
+            -p:AndroidSigningStorePass=env:ANDROID_KEYSTORE_PASSWORD \
+            -p:AndroidSigningKeyAlias="$ANDROID_KEY_ALIAS" \
+            -p:AndroidSigningKeyPass=env:ANDROID_KEY_PASSWORD \
+            -p:ApplicationVersion=${{ steps.version.outputs.code }} \
+            -p:ApplicationDisplayVersion=${{ steps.version.outputs.name }} \
+            -p:InstallAndroidDependencies=true \
+            -p:AcceptAndroidSDKLicenses=true \
+            -p:AndroidSdkDirectory="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+
+      - name: Collect APK
+        id: apk
+        run: |
+          APK="$(find UNIVAST.Mobile/bin/Release -name '*-Signed.apk' | head -n 1)"
+          if [ -z "$APK" ]; then APK="$(find UNIVAST.Mobile/bin/Release -name '*.apk' | head -n 1)"; fi
+          test -n "$APK" || { echo "No APK produced"; find UNIVAST.Mobile/bin/Release -maxdepth 4 | head -50; exit 1; }
+          mkdir -p dist
+          OUT="dist/UNIVAST-${{ steps.version.outputs.name }}.apk"
+          cp "$APK" "$OUT"
+          echo "path=$OUT" >> "$GITHUB_OUTPUT"
+          ls -lh dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: UNIVAST-apk
+          path: ${{ steps.apk.outputs.path }}
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        if: ${{ github.ref_type == 'tag' || inputs.release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('build-{0}', github.run_number) }}
+          name: UNIVAST ${{ steps.version.outputs.name }}
+          prerelease: ${{ github.ref_type != 'tag' }}
+          files: ${{ steps.apk.outputs.path }}
+          body: |
+            Install on Android: open this page on your phone, download the `.apk`, tap it, and allow
+            "Install unknown apps" for your browser when asked.
+            Signed with: **${{ steps.signing.outputs.mode }}**
+
+      - name: Summary
+        run: |
+          {
+            echo "### UNIVAST APK built"
+            echo "- Version: ${{ steps.version.outputs.name }} (code ${{ steps.version.outputs.code }})"
+            echo "- Signing: ${{ steps.signing.outputs.mode }}"
+            echo "- Download: the **UNIVAST-apk** artifact below, or the Releases page if this was a tag/release run."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!--
+        UNIVAST component styles: the shared look for every screen (map, search, place cards, directions, forms).
+        Colours come only from Colors.xaml. Sizes follow one scale:
+          type    : 24 screen title | 22 place name | 16 section / result title | 14 body | 12 caption
+          radius  : 28 sheet top | 22 floating card | 16 inner card | 12 chip | height/2 for buttons
+          control : 52 primary button | 44 secondary button | 48 map control | 54 search bar
+          spacing : 4 / 8 / 12 / 16 / 20
+    -->
+
+    <Shadow x:Key="FloatShadow" Brush="{StaticResource UvInkBrush}" Opacity="0.16" Radius="14" Offset="0,4" />
+    <Shadow x:Key="SheetShadow" Brush="{StaticResource UvInkBrush}" Opacity="0.20" Radius="24" Offset="0,-6" />
+
+    <!-- ===== surfaces ===== -->
+    <Style x:Key="Float" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvSurface}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Shadow" Value="{StaticResource FloatShadow}" />
+    </Style>
+
+    <Style x:Key="Sheet" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvSurface}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 28,28,0,0" />
+        <Setter Property="Shadow" Value="{StaticResource SheetShadow}" />
+        <Setter Property="Padding" Value="20,10,20,24" />
+        <Setter Property="VerticalOptions" Value="End" />
+    </Style>
+
+    <!-- A flat card used on ordinary (non-map) screens and inside sheets. -->
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvSurface}" />
+        <Setter Property="Stroke" Value="{StaticResource UvHairline}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 16" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <Style x:Key="Pill" TargetType="Border">
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="Padding" Value="10,4" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="BackgroundColor" Value="{StaticResource UvBackground}" />
+    </Style>
+
+    <Style x:Key="MapFab" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvSurface}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 24" />
+        <Setter Property="WidthRequest" Value="48" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="Shadow" Value="{StaticResource FloatShadow}" />
+    </Style>
+
+    <!-- ===== buttons ===== -->
+    <Style x:Key="PrimaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvBlue}" />
+        <Setter Property="TextColor" Value="{StaticResource UvOnAccent}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="HeightRequest" Value="52" />
+        <Setter Property="CornerRadius" Value="26" />
+    </Style>
+
+    <Style x:Key="TonalButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvBlueSoft}" />
+        <Setter Property="TextColor" Value="{StaticResource UvBlue}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HeightRequest" Value="44" />
+        <Setter Property="CornerRadius" Value="22" />
+    </Style>
+
+    <Style x:Key="TextButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="TextColor" Value="{StaticResource UvMuted}" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <!-- Outlined secondary action on ordinary screens (Save, Call, Write a review…). -->
+    <Style x:Key="SecondaryButton" TargetType="Button">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvSurface}" />
+        <Setter Property="TextColor" Value="{StaticResource UvText}" />
+        <Setter Property="BorderColor" Value="{StaticResource UvHairline}" />
+        <Setter Property="BorderWidth" Value="1" />
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="HeightRequest" Value="48" />
+        <Setter Property="CornerRadius" Value="24" />
+    </Style>
+
+    <!-- Destructive actions only (end navigation, delete, log out of everything). -->
+    <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+        <Setter Property="BackgroundColor" Value="{StaticResource UvDanger}" />
+    </Style>
+
+    <!-- ===== typography ===== -->
+    <Style x:Key="ScreenTitle" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="TextColor" Value="{StaticResource UvText}" />
+    </Style>
+    <Style x:Key="PlaceName" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="TextColor" Value="{StaticResource UvText}" />
+    </Style>
+    <Style x:Key="Title" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="TextColor" Value="{StaticResource UvText}" />
+    </Style>
+    <Style x:Key="SectionTitle" TargetType="Label" BasedOn="{StaticResource Title}" />
+    <Style x:Key="Body" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="TextColor" Value="{StaticResource UvMuted}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style x:Key="BodyStrong" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="TextColor" Value="{StaticResource UvText}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style x:Key="Caption" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="TextColor" Value="{StaticResource UvMuted}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style x:Key="Link" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="TextColor" Value="{StaticResource UvBlue}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style x:Key="Overline" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="CharacterSpacing" Value="1" />
+        <Setter Property="TextColor" Value="{StaticResource UvMuted}" />
+    </Style>
+    <Style x:Key="ErrorText" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="TextColor" Value="{StaticResource UvDanger}" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+</ResourceDictionary>

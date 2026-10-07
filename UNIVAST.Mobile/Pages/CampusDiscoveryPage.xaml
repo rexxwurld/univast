@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UNIVAST.Mobile.Pages.CampusDiscoveryPage"
+             Title="Campus finder"
+             BackgroundColor="{StaticResource UvBackground}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="18" RowSpacing="12">
+        <VerticalStackLayout Spacing="3">
+            <Label Text="CAMPUS FINDER" Style="{StaticResource Overline}" />
+            <Label x:Name="CampusTitle" Text="Find your way around" Style="{StaticResource ScreenTitle}" />
+        </VerticalStackLayout>
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <Entry x:Name="QueryEntry" Placeholder="Library, clinic, student centre…" ReturnType="Search" Completed="Search_Clicked" />
+            <Button Grid.Column="1" Text="Search" Clicked="Search_Clicked" Style="{StaticResource PrimaryButton}" HeightRequest="44" CornerRadius="22" FontSize="14" Padding="20,0" />
+        </Grid>
+        <Label x:Name="CategoriesLabel" Grid.Row="2" FontSize="12" TextColor="{StaticResource UvMuted}" LineBreakMode="TailTruncation" MaxLines="2" />
+        <Grid Grid.Row="3">
+            <CollectionView x:Name="ResultsList" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}" Margin="0,0,0,8">
+                            <VerticalStackLayout Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                    <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource UvText}" />
+                                    <Label Grid.Column="1" Text="{Binding Category}" FontSize="12" TextColor="{StaticResource UvBlue}" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="Demo" IsVisible="{Binding IsDemoData}" FontSize="11" TextColor="{StaticResource UvWarning}" VerticalOptions="Center" />
+                                </Grid>
+                                <Label Text="{Binding Kind}" FontSize="12" TextColor="{StaticResource UvMuted}" />
+                                <Label Text="{Binding Details.Description}" FontSize="13" TextColor="{StaticResource UvText}" />
+                                <Button Text="Suggest a correction" Clicked="SuggestCorrection_Clicked" HorizontalOptions="Start"
+                                    FontSize="12" Padding="10,4" Style="{StaticResource TonalButton}" HeightRequest="36" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <ActivityIndicator x:Name="BusyIndicator" IsVisible="False" IsRunning="False" Color="{StaticResource UvBlue}" VerticalOptions="Start" />
+            <Label x:Name="StatusLabel" Text="Search places students commonly need." TextColor="{StaticResource UvMuted}" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" />
+        </Grid>
+    </Grid>
+</ContentPage>

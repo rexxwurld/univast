@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UNIVAST.Mobile.Pages.PlaceDetailPage"
+             Title="Place"
+             BackgroundColor="{StaticResource UvBackground}">
+
+    <Grid>
+
+        <ActivityIndicator x:Name="LoadingIndicator"
+                            IsRunning="True"
+                            IsVisible="True"
+                            Color="{StaticResource UvBlue}"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center" />
+
+        <Label x:Name="ErrorLabel"
+               IsVisible="False"
+               Text="Couldn't load this place."
+               TextColor="{StaticResource UvDanger}"
+               FontSize="16"
+               Margin="24"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+
+        <ScrollView x:Name="ContentScroll" IsVisible="False">
+            <VerticalStackLayout Padding="20" Spacing="14">
+
+                <Label x:Name="NameLabel"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource UvText}" />
+
+                <Label x:Name="CategoryLabel"
+                       FontSize="14"
+                       TextColor="{StaticResource UvBlue}" />
+
+                <Label x:Name="RatingLabel"
+                       FontSize="14"
+                       TextColor="{StaticResource UvMuted}" />
+
+                <Label x:Name="DistanceLabel"
+                       FontSize="13"
+                       TextColor="{StaticResource UvMuted}"
+                       IsVisible="False" />
+
+                <BoxView HeightRequest="1" BackgroundColor="{StaticResource UvHairline}" Margin="0,8" />
+
+                <Label x:Name="DescriptionLabel"
+                       FontSize="15"
+                       TextColor="{StaticResource UvText}"
+                       IsVisible="False" />
+
+                <Label x:Name="AddressLabel"
+                       FontSize="14"
+                       TextColor="{StaticResource UvMuted}"
+                       IsVisible="False" />
+
+                <Label x:Name="PhoneLabel"
+                       FontSize="14"
+                       TextColor="{StaticResource UvMuted}"
+                       IsVisible="False" />
+
+                <Label x:Name="WebsiteLabel"
+                       FontSize="14"
+                       TextColor="{StaticResource UvBlue}"
+                       IsVisible="False" />
+
+                <VerticalStackLayout Spacing="10" Margin="0,16,0,0">
+
+                    <Button Style="{StaticResource PrimaryButton}" x:Name="DirectionsButton"
+                            Text="Open in Maps"
+                            Clicked="Directions_Clicked" />
+
+                    <Button Style="{StaticResource PrimaryButton}" x:Name="NavigateCampusButton"
+                            Text="View on campus map"
+                            IsVisible="False"
+                            Clicked="NavigateCampus_Clicked" />
+
+                    <Button Style="{StaticResource SecondaryButton}" x:Name="SaveButton"
+                            Text="☆  Save"
+                            Clicked="Save_Clicked" />
+
+                    <Button Style="{StaticResource SecondaryButton}" x:Name="CallButton"
+                            Text="Call"
+                            IsVisible="False"
+                            Clicked="Call_Clicked" />
+
+                    <Button Style="{StaticResource SecondaryButton}" x:Name="WriteReviewButton"
+                            Text="Write a review"
+                            Clicked="WriteReview_Clicked" />
+
+                    <Button Style="{StaticResource SecondaryButton}" x:Name="ClaimBusinessButton"
+                            Text="Claim this business"
+                            Clicked="ClaimBusiness_Clicked" />
+
+                    <Button Style="{StaticResource TextButton}" x:Name="ReportPlaceButton"
+                            Text="Report this place"
+                            HeightRequest="44"
+                            Clicked="ReportPlace_Clicked" />
+
+                </VerticalStackLayout>
+
+                <BoxView HeightRequest="1" BackgroundColor="{StaticResource UvHairline}" Margin="0,16,0,8" />
+
+                <Label Text="Reviews" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource UvText}" />
+
+                <Label x:Name="NoReviewsLabel"
+                       Text="No reviews yet — be the first."
+                       FontSize="14"
+                       TextColor="{StaticResource UvMuted}"
+                       IsVisible="False" />
+
+                <VerticalStackLayout x:Name="ReviewsList" Spacing="12" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

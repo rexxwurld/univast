@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UNIVAST.Mobile.Pages.ContributionCenterPage"
+             Title="Campus contributions"
+             BackgroundColor="{StaticResource UvBackground}">
+    <Grid RowDefinitions="*,Auto" Padding="16" RowSpacing="10">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="11">
+                <Label Text="CAMPUS CONTRIBUTIONS" Style="{StaticResource Overline}" />
+                <Label x:Name="CampusTitle" Text="Suggest a campus correction" Style="{StaticResource ScreenTitle}" />
+                <Label Text="Changes are reviewed before they appear in campus data." FontSize="14" TextColor="{StaticResource UvMuted}" />
+                <Picker x:Name="TargetPicker" Title="Data type" />
+                <Entry x:Name="TargetIdEntry" Placeholder="Target record ID" MaxLength="24" />
+                <Entry x:Name="TitleEntry" Placeholder="Short title" MaxLength="200" />
+                <Editor x:Name="DescriptionEditor" Placeholder="What should be corrected, and why?" AutoSize="TextChanges" MaximumHeightRequest="120" />
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <Button Text="Attach evidence" Clicked="Evidence_Clicked" FontSize="13" />
+                    <Label x:Name="EvidenceLabel" Grid.Column="1" Text="Optional: up to 5 photos, PDFs, or videos" FontSize="12" TextColor="{StaticResource UvMuted}" VerticalOptions="Center" />
+                </Grid>
+                <Label Text="Proposed field changes (JSON)" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource UvText}" />
+                <Editor x:Name="ChangesEditor" Text="{}{&quot;description&quot;:&quot;&quot;}" AutoSize="TextChanges" MinimumHeightRequest="100" MaximumHeightRequest="220" />
+                <Label x:Name="ErrorLabel" IsVisible="False" TextColor="{StaticResource UvDanger}" FontSize="13" />
+                <Button x:Name="SubmitButton" Text="Submit for review" Clicked="Submit_Clicked" Style="{StaticResource PrimaryButton}" />
+                <ActivityIndicator x:Name="BusyIndicator" IsVisible="False" IsRunning="False" Color="{StaticResource UvBlue}" />
+                <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                    <Label Text="My submissions" Style="{StaticResource Title}" />
+                    <Button Grid.Column="1" Text="Refresh" Clicked="Refresh_Clicked" FontSize="13" />
+                </Grid>
+                <VerticalStackLayout x:Name="SubmissionsList" Spacing="6" />
+            </VerticalStackLayout>
+        </ScrollView>
+        <Label x:Name="StatusLabel" Grid.Row="1" IsVisible="False" TextColor="{StaticResource UvMuted}" FontSize="13" />
+    </Grid>
+</ContentPage>
