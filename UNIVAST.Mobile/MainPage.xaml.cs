@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Mapsui;
 using Mapsui.Extensions;
 using Mapsui.Layers;
@@ -57,7 +58,7 @@ public partial class MainPage : ContentPage
         BindingContext = vm;
 
         // Other screens (a place that belongs to a campus) ask the map to show that campus.
-        CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Register<MainPage, ViewCampusOnMapMessage>(this,
+        WeakReferenceMessenger.Default.Register<MainPage, ViewCampusOnMapMessage>(this,
             static (page, message) => page.Dispatcher.Dispatch(async () => await page._vm.ViewCampusAsync(message.CampusId, message.Latitude, message.Longitude)));
 
         CreateMap();
